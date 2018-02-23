@@ -27,7 +27,6 @@ class Manitou(object):
             self.source_manifests[manifest_name] = manifest
             if not self.mpd_attrib:
                 self.mpd_attrib = manifest.attrib
-                print (">>", self.mpd_attrib)
         return self.source_manifests[manifest_name]
 
     def get_representation(self, manifest_name, representation_id):
@@ -75,13 +74,13 @@ class Manitou(object):
                     )
         if mpd["availabilityStartTime"] is not None:
             astart = parse_iso_datetime(mpd["availabilityStartTime"])
-            astart += datetime.timedelta(seconds=10)
+            astart += datetime.timedelta(seconds=kwargs.get("ats_offset", 10))
             mpd["availabilityStartTime"] = astart.isoformat()
 
         return mpd.xml
 
 
-    def save(self, target):
+    def save(self, target, **kwargs):
         path = str(target)
-        with open(path, w) as f:
-            f.write(self.render())
+        with open(path, "w") as f:
+            f.write(self.render(**kwargs))
